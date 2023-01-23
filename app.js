@@ -29,6 +29,17 @@ connect.then((db) => {
 
 var app = express();
 
+// Secure traffic only
+app.all('*', (req, res, next) => {
+  if (req.secure) {
+    return next();
+  } else {
+    res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url);
+    // 307 here represents that the target resource resides temporarily under different URL. 
+    // And the user agent must not change the request method if it reforms in automatic redirection to that URL.
+  }
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -40,7 +51,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Sesion middleware should be removed when using JWT authentication
 // This error shows up when removing the session middleware
-// Login sessions require session support. Did you forget to use `express-session` middleware?
+// "Login sessions require session support. Did you forget to use `express-session` middleware?"
 app.use(session({
   name: 'session-id',
   secret: '12345-67890-09876-54321',
