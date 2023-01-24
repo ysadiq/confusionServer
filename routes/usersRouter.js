@@ -50,6 +50,7 @@ router.post('/signup', cors.corsWithOptions, (req, res, next) => {
 });
 
 router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
+  // Create JSONWebToken
   var token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
@@ -71,6 +72,9 @@ router.get('/logout', cors.corsWithOptions, (req, res) => {
   }
 });
 
+// You can attach the retrieved Facebook token in either 
+// header as: Authorization: Bearer <Access Token>
+// URL parameter as: access_toke=<Access Token>
 router.get('/facebook/token', passport.authenticate('facebook-token'), (req, res) => {
   if (req.user) {
     // Create JSONWebToken
